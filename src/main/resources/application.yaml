@@ -17,6 +17,7 @@ app:
   jwt:
     secret: "f7b8c4a9d2e5f1b8c7a4d6e9f2b5c8a1f4d7e0b3a6c9e2f5"
     expiration: 900000
+    refresh-expiration: 2592000000
 
 server:
   port: 9090

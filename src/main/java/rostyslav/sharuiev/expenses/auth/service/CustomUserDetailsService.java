@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.auth.security;
+package rostyslav.sharuiev.expenses.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
