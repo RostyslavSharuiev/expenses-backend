@@ -28,7 +28,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest user) {
         log.info("Called createUser with email={}", user.email());
 
