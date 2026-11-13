@@ -9,7 +9,7 @@ import rostyslav.sharuiev.expenses.user.dto.UserResponse;
 import rostyslav.sharuiev.expenses.user.entity.UserCredentialsEntity;
 import rostyslav.sharuiev.expenses.user.entity.UserEntity;
 import rostyslav.sharuiev.expenses.user.mapper.UserMapper;
-import rostyslav.sharuiev.expenses.user.repository.UserCredentialsRepository;
+import rostyslav.sharuiev.expenses.auth.repository.UserCredentialsRepository;
 import rostyslav.sharuiev.expenses.user.repository.UserRepository;
 
 import java.util.List;
