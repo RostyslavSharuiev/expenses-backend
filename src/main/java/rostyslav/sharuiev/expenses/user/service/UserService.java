@@ -51,6 +51,7 @@ public class UserService {
         return userMapper.toResponse(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getUserById(UUID id) {
         var user = userRepository
                 .findById(id)
