@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.config.secutity;
+package rostyslav.sharuiev.expenses.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -33,30 +33,14 @@ public class RefreshTokenService {
             UserEntity user,
             UUID tokenFamilyId
     ) {
-        byte[] randomBytes = new byte[32];
-
-        secureRandom.nextBytes(randomBytes);
-
-        String rawToken = Base64.getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(randomBytes);
-
-        RefreshTokenEntity entity = new RefreshTokenEntity();
-
-        entity.setUser(user);
-        entity.setTokenHash(hashToken(rawToken));
-        entity.setTokenFamilyId(tokenFamilyId);
-        entity.setExpiresAt(
-                Instant.now().plusMillis(refreshExpiration)
-        );
-
-        refreshTokenRepository.save(entity);
-
-        return rawToken;
+        return generateAndSaveRefreshToken(user, tokenFamilyId);
     }
 
     @Transactional(noRollbackFor = RefreshTokenReuseException.class)
-    public RefreshTokenEntity rotateRefreshToken(String rawToken) {
+    public RefreshTokenResult rotateRefreshToken(String rawToken) {
+        if (rawToken == null || rawToken.isBlank()) {
+            throw new InvalidRefreshTokenException("Refresh token is required");
+        }
 
         String tokenHash = hashToken(rawToken);
 
@@ -78,22 +62,12 @@ public class RefreshTokenService {
 
         oldToken.setRevokedAt(now);
 
-        refreshTokenRepository.save(oldToken);
+        UserEntity user = oldToken.getUser();
+        UUID tokenFamilyId = oldToken.getTokenFamilyId();
 
-        return oldToken;
-    }
+        String newRawToken = generateAndSaveRefreshToken(user, tokenFamilyId);
 
-    @Transactional
-    public void revokeFamily(UUID tokenFamilyId) {
-        revokeFamily(tokenFamilyId, Instant.now());
-    }
-
-    private void revokeFamily(UUID tokenFamilyId, Instant now) {
-        var tokens = refreshTokenRepository.findAllByTokenFamilyIdAndRevokedAtIsNull(tokenFamilyId);
-
-        tokens.forEach(token -> token.setRevokedAt(now));
-
-        refreshTokenRepository.saveAll(tokens);
+        return new RefreshTokenResult(user.getEmail(), newRawToken);
     }
 
     @Transactional
@@ -104,17 +78,26 @@ public class RefreshTokenService {
 
         String tokenHash = hashToken(rawToken);
 
-        refreshTokenRepository.findByTokenHashForUpdate(tokenHash).ifPresent(token -> {
-            Instant now = Instant.now();
-            token.setRevokedAt(now);
-            refreshTokenRepository.save(token);
-            revokeFamily(token.getTokenFamilyId(), now);
-        });
+        refreshTokenRepository
+                .findByTokenHashForUpdate(tokenHash)
+                .ifPresent(token -> {
+                    Instant now = Instant.now();
+
+                    token.setRevokedAt(now);
+
+                    revokeFamily(token.getTokenFamilyId(), now);
+                });
+    }
+
+    @Transactional
+    public void revokeFamily(UUID tokenFamilyId) {
+        revokeFamily(tokenFamilyId, Instant.now());
     }
 
     @Transactional
     public void revokeAllUserTokens(UUID userId) {
         Instant now = Instant.now();
+
         var tokens = refreshTokenRepository.findAllByUser_IdAndRevokedAtIsNull(userId);
 
         tokens.forEach(token -> token.setRevokedAt(now));
@@ -122,8 +105,39 @@ public class RefreshTokenService {
         refreshTokenRepository.saveAll(tokens);
     }
 
-    public long getRefreshExpiration() {
-        return refreshExpiration;
+    private void revokeFamily(UUID tokenFamilyId, Instant now) {
+        var tokens = refreshTokenRepository.findAllByTokenFamilyIdAndRevokedAtIsNull(tokenFamilyId);
+
+        tokens.forEach(token -> token.setRevokedAt(now));
+
+        refreshTokenRepository.saveAll(tokens);
+    }
+
+    private String generateAndSaveRefreshToken(
+            UserEntity user,
+            UUID tokenFamilyId
+    ) {
+        byte[] randomBytes = new byte[32];
+
+        secureRandom.nextBytes(randomBytes);
+
+        String rawToken = Base64
+                .getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(randomBytes);
+
+        RefreshTokenEntity entity = new RefreshTokenEntity();
+
+        entity.setUser(user);
+        entity.setTokenHash(hashToken(rawToken));
+        entity.setTokenFamilyId(tokenFamilyId);
+        entity.setExpiresAt(
+                Instant.now().plusMillis(refreshExpiration)
+        );
+
+        refreshTokenRepository.save(entity);
+
+        return rawToken;
     }
 
     public String hashToken(String token) {
@@ -142,4 +156,13 @@ public class RefreshTokenService {
             );
         }
     }
+
+    public long getRefreshExpiration() {
+        return refreshExpiration;
+    }
+
+    public record RefreshTokenResult(
+            String email,
+            String refreshToken
+    ) {}
 }

@@ -1,9 +1,10 @@
 
-package rostyslav.sharuiev.expenses.config.secutity;
+package rostyslav.sharuiev.expenses.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import rostyslav.sharuiev.expenses.auth.security.JwtAuthenticationFilter;
 
+import java.time.Duration;
 import java.util.List;
 
 @Configuration
@@ -31,33 +33,41 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(
                         corsConfigurationSource()
                 ))
+
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS
                 ))
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/me")
+                        .authenticated()
+
                         .requestMatchers(
-                                "/api/v1/auth/me",
-                                "/auth/me"
-                        ).authenticated()
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/auth/**",
-                                "/api/v1/users/**",
-                                "/users/**"
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh",
+                                "/api/v1/auth/logout"
                         ).permitAll()
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+
+                        .anyRequest()
+                        .authenticated()
                 )
+
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
+
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
+
                 .build();
     }
 
@@ -85,12 +95,16 @@ public class SecurityConfig {
         ));
 
         configuration.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
+                HttpHeaders.AUTHORIZATION,
+                HttpHeaders.CONTENT_TYPE,
+                HttpHeaders.ACCEPT,
+                HttpHeaders.ORIGIN,
+                "X-Requested-With",
                 "X-XSRF-TOKEN"
         ));
 
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(Duration.ofHours(1));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

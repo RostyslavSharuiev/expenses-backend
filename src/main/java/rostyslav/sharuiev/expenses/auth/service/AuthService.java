@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
@@ -53,6 +56,7 @@ public class AuthService {
         }
 
         UserEntity user = new UserEntity();
+
         user.setEmail(email);
         user.setEmailVerified(false);
         user.setFirstName(request.firstName());
@@ -61,14 +65,14 @@ public class AuthService {
         user = userRepository.save(user);
 
         UserCredentialsEntity credentials = new UserCredentialsEntity();
+
         credentials.setUser(user);
         credentials.setPasswordHash(passwordEncoder.encode(request.password()));
         credentials.setPasswordChangedAt(Instant.now());
 
         credentialsRepository.save(credentials);
 
-        UUID tokenFamilyId = UUID.randomUUID();
-        return createAuthResult(user, tokenFamilyId);
+        return createAuthResult(user);
     }
 
     @Transactional
@@ -84,36 +88,30 @@ public class AuthService {
                         String.format("User with email %s not found", email)
                 ));
 
-        UUID tokenFamilyId = UUID.randomUUID();
-        return createAuthResult(user, tokenFamilyId);
+        return createAuthResult(user);
     }
 
     @Transactional
     public AuthResult refreshToken(String rawRefreshToken) {
-        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
-            throw new InvalidRefreshTokenException("Refresh token is required");
-        }
+        RefreshTokenService.RefreshTokenResult refreshResult = refreshTokenService.rotateRefreshToken(rawRefreshToken);
 
-        RefreshTokenEntity oldToken = refreshTokenService.rotateRefreshToken(rawRefreshToken);
-        UserEntity user = oldToken.getUser();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(refreshResult.email());
 
-        String newRefreshToken = refreshTokenService.createRefreshToken(user, oldToken.getTokenFamilyId());
-        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+        String accessToken = jwtService.generateAccessToken(userDetails);
 
-        return new AuthResult(newAccessToken, newRefreshToken, accessExpiration);
+        return new AuthResult(accessToken, refreshResult.refreshToken(), jwtService.getExpiration());
     }
 
     @Transactional
     public void logout(String rawRefreshToken) {
-        if (rawRefreshToken != null && !rawRefreshToken.isBlank()) {
-            refreshTokenService.revokeToken(rawRefreshToken);
-        }
+        refreshTokenService.revokeToken(rawRefreshToken);
     }
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String email) {
-        String normalized = normalizeEmail(email);
-        UserEntity user = userRepository.findByEmailIgnoreCase(normalized)
+        String normalizedEmail = normalizeEmail(email);
+
+        UserEntity user = userRepository.findByEmailIgnoreCase(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("User with email %s not found", email)
                 ));
@@ -122,14 +120,20 @@ public class AuthService {
     }
 
     private String normalizeEmail(String email) {
-        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    private AuthResult createAuthResult(UserEntity user, UUID tokenFamilyId) {
-        String accessToken = jwtService.generateAccessToken(user.getEmail());
-        String refreshToken = refreshTokenService.createRefreshToken(user, tokenFamilyId);
+    private AuthResult createAuthResult(UserEntity user) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
-        return new AuthResult(accessToken, refreshToken, accessExpiration);
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        String refreshToken = refreshTokenService.createRefreshToken(user, UUID.randomUUID());
+
+        return new AuthResult(accessToken, refreshToken, jwtService.getExpiration());
     }
 
     public record AuthResult(

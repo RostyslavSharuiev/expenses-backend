@@ -1,6 +1,7 @@
 package rostyslav.sharuiev.expenses.auth.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,14 +16,14 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final SecretKey sigingKey;
+    private final SecretKey signingKey;
     private final long expiration;
 
     public JwtService(
        @Value("${app.jwt.secret}") String secret,
        @Value("${app.jwt.expiration}") long expiration
     ) {
-        this.sigingKey = Keys.hmacShaKeyFor(
+        this.signingKey = Keys.hmacShaKeyFor(
                 Decoders.BASE64.decode(secret)
         );
 
@@ -41,7 +42,7 @@ public class JwtService {
                 .subject(username)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(expiration)))
-                .signWith(sigingKey)
+                .signWith(signingKey)
                 .compact();
     }
 
@@ -51,10 +52,16 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
-            String username = extractUsername(token);
+            Claims claims = extractAllClaims(token);
 
-            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
-        } catch (Exception e) {
+            String username = claims.getSubject();
+            Date expirationDate = claims.getExpiration();
+
+            return username != null
+                    && username.equals(userDetails.getUsername())
+                    && expirationDate != null
+                    && expirationDate.after(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
@@ -66,15 +73,9 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
-                .verifyWith(sigingKey)
+                .verifyWith(signingKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token)
-                .getExpiration()
-                .before(new Date());
     }
 }
