@@ -96,6 +96,36 @@ public class RefreshTokenService {
         refreshTokenRepository.saveAll(tokens);
     }
 
+    @Transactional
+    public void revokeToken(String rawToken) {
+        if (rawToken == null || rawToken.isBlank()) {
+            return;
+        }
+
+        String tokenHash = hashToken(rawToken);
+
+        refreshTokenRepository.findByTokenHashForUpdate(tokenHash).ifPresent(token -> {
+            Instant now = Instant.now();
+            token.setRevokedAt(now);
+            refreshTokenRepository.save(token);
+            revokeFamily(token.getTokenFamilyId(), now);
+        });
+    }
+
+    @Transactional
+    public void revokeAllUserTokens(UUID userId) {
+        Instant now = Instant.now();
+        var tokens = refreshTokenRepository.findAllByUser_IdAndRevokedAtIsNull(userId);
+
+        tokens.forEach(token -> token.setRevokedAt(now));
+
+        refreshTokenRepository.saveAll(tokens);
+    }
+
+    public long getRefreshExpiration() {
+        return refreshExpiration;
+    }
+
     public String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

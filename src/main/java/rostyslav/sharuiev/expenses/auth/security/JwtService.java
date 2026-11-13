@@ -30,11 +30,15 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(userDetails.getUsername());
+    }
+
+    public String generateAccessToken(String username) {
         Instant now = Instant.now();
 
         return Jwts
                 .builder()
-                .subject(userDetails.getUsername())
+                .subject(username)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(expiration)))
                 .signWith(sigingKey)

@@ -61,4 +61,15 @@ public class UserService {
 
         return userMapper.toResponse(user);
     }
+
+    @Transactional(readOnly = true)
+    public UserResponse getUserByEmail(String email) {
+        var user = userRepository
+                .findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("User with email=%s not found", email))
+                );
+
+        return userMapper.toResponse(user);
+    }
 }

@@ -13,10 +13,6 @@ import java.util.UUID;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, UUID> {
 
-    Optional<RefreshTokenEntity> findByTokenHash(String tokenHash);
-
-    List<RefreshTokenEntity> findAllByTokenFamilyId(UUID tokenFamilyId);
-
     List<RefreshTokenEntity> findAllByTokenFamilyIdAndRevokedAtIsNull(UUID tokenFamilyId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -28,4 +24,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
     Optional<RefreshTokenEntity> findByTokenHashForUpdate(
             @Param("tokenHash") String tokenHash
     );
+
+    List<RefreshTokenEntity> findAllByUser_IdAndRevokedAtIsNull(UUID userId);
 }
