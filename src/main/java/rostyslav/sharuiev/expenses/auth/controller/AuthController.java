@@ -2,8 +2,6 @@ package rostyslav.sharuiev.expenses.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import rostyslav.sharuiev.expenses.auth.dto.AuthResponse;
+import rostyslav.sharuiev.expenses.auth.dto.AuthResult;
 import rostyslav.sharuiev.expenses.auth.dto.LoginRequest;
 import rostyslav.sharuiev.expenses.auth.dto.RegisterRequest;
 import rostyslav.sharuiev.expenses.auth.exception.InvalidRefreshTokenException;
@@ -46,7 +45,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@RequestBody @Valid RegisterRequest request) {
         log.info("Registration attempt for email={}", request.email());
 
-        AuthService.AuthResult result = authService.register(request);
+        AuthResult result = authService.register(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -59,7 +58,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request) {
         log.info("Login attempt for email={}", request.email());
 
-        AuthService.AuthResult result = authService.login(request);
+        AuthResult result = authService.login(request);
 
         return ResponseEntity
                 .ok()
@@ -79,7 +78,7 @@ public class AuthController {
             throw new InvalidRefreshTokenException("Refresh token is required");
         }
 
-        AuthService.AuthResult result = authService.refreshToken(refreshToken);
+        AuthResult result = authService.refreshToken(refreshToken);
 
         return ResponseEntity
                 .ok()

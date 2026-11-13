@@ -1,6 +1,7 @@
 package rostyslav.sharuiev.expenses.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserCredentialsRepository credentialsRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
         UserCredentialsEntity credentials = credentialsRepository
                 .findByUser_EmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException(

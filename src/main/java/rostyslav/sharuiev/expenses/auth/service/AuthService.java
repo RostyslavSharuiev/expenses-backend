@@ -1,7 +1,6 @@
 package rostyslav.sharuiev.expenses.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,16 +8,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rostyslav.sharuiev.expenses.auth.dto.AuthResponse;
+import rostyslav.sharuiev.expenses.auth.dto.AuthResult;
 import rostyslav.sharuiev.expenses.auth.dto.LoginRequest;
 import rostyslav.sharuiev.expenses.auth.dto.RegisterRequest;
-import rostyslav.sharuiev.expenses.auth.entity.RefreshTokenEntity;
 import rostyslav.sharuiev.expenses.auth.exception.EmailAlreadyRegisteredException;
-import rostyslav.sharuiev.expenses.auth.exception.InvalidRefreshTokenException;
+import rostyslav.sharuiev.expenses.auth.mapper.AuthMapper;
 import rostyslav.sharuiev.expenses.auth.repository.UserCredentialsRepository;
 import rostyslav.sharuiev.expenses.auth.security.JwtService;
 import rostyslav.sharuiev.expenses.user.dto.UserResponse;
-import rostyslav.sharuiev.expenses.user.entity.UserCredentialsEntity;
 import rostyslav.sharuiev.expenses.user.entity.UserEntity;
 import rostyslav.sharuiev.expenses.user.mapper.UserMapper;
 import rostyslav.sharuiev.expenses.user.repository.UserRepository;
@@ -34,6 +31,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserCredentialsRepository credentialsRepository;
     private final UserMapper userMapper;
+    private final AuthMapper authMapper;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -41,9 +39,6 @@ public class AuthService {
 
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
-
-    @Value("${app.jwt.expiration}")
-    private long accessExpiration;
 
     @Transactional
     public AuthResult register(RegisterRequest request) {
@@ -55,22 +50,13 @@ public class AuthService {
             );
         }
 
-        UserEntity user = new UserEntity();
+        var user = userRepository.save(authMapper.toUserEntity(request, email, false));
 
-        user.setEmail(email);
-        user.setEmailVerified(false);
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-
-        user = userRepository.save(user);
-
-        UserCredentialsEntity credentials = new UserCredentialsEntity();
-
-        credentials.setUser(user);
-        credentials.setPasswordHash(passwordEncoder.encode(request.password()));
-        credentials.setPasswordChangedAt(Instant.now());
-
-        credentialsRepository.save(credentials);
+        credentialsRepository.save(authMapper.toUserCredentialsEntity(
+                user,
+                passwordEncoder.encode(request.password()),
+                Instant.now()
+        ));
 
         return createAuthResult(user);
     }
@@ -134,19 +120,5 @@ public class AuthService {
         String refreshToken = refreshTokenService.createRefreshToken(user, UUID.randomUUID());
 
         return new AuthResult(accessToken, refreshToken, jwtService.getExpiration());
-    }
-
-    public record AuthResult(
-            String accessToken,
-            String refreshToken,
-            long expiresIn
-    ) {
-        public AuthResponse toResponse() {
-            return new AuthResponse(
-                    accessToken,
-                    "Bearer",
-                    expiresIn / 1000
-            );
-        }
     }
 }

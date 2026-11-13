@@ -25,13 +25,13 @@ public class GlobalExceptionHandler {
                 log.warn("Email already registered: {}", e.getMessage());
 
                 var errorDto = new ErrorResponseDto(
-                                "Email already registered",
-                                e.getMessage(),
-                                LocalDateTime.now());
+                        "Email already registered",
+                        e.getMessage(),
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.CONFLICT)
-                                .body(errorDto);
+                        .status(HttpStatus.CONFLICT)
+                        .body(errorDto);
         }
 
         @ExceptionHandler({ BadCredentialsException.class, AuthenticationException.class })
@@ -39,13 +39,13 @@ public class GlobalExceptionHandler {
                 log.warn("Authentication failed: {}", e.getMessage());
 
                 var errorDto = new ErrorResponseDto(
-                                "Authentication failed",
-                                "Invalid email or password",
-                                LocalDateTime.now());
+                        "Authentication failed",
+                        "Invalid email or password",
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.UNAUTHORIZED)
-                                .body(errorDto);
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(errorDto);
         }
 
         @ExceptionHandler(InvalidRefreshTokenException.class)
@@ -53,13 +53,13 @@ public class GlobalExceptionHandler {
                 log.warn("Invalid refresh token: {}", e.getMessage());
 
                 var errorDto = new ErrorResponseDto(
-                                "Invalid refresh token",
-                                e.getMessage(),
-                                LocalDateTime.now());
+                        "Invalid refresh token",
+                        e.getMessage(),
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.UNAUTHORIZED)
-                                .body(errorDto);
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(errorDto);
         }
 
         @ExceptionHandler(RefreshTokenReuseException.class)
@@ -67,31 +67,34 @@ public class GlobalExceptionHandler {
                 log.warn("Refresh token reuse detected: {}", e.getMessage());
 
                 var errorDto = new ErrorResponseDto(
-                                "Refresh token reuse detected",
-                                e.getMessage(),
-                                LocalDateTime.now());
+                        "Refresh token reuse detected",
+                        e.getMessage(),
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.UNAUTHORIZED)
-                                .body(errorDto);
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(errorDto);
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorResponseDto> handleValidationException(MethodArgumentNotValidException e) {
                 log.warn("Validation error: {}", e.getMessage());
 
-                String detailedMessage = e.getBindingResult().getFieldErrors().stream()
-                                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                                .collect(Collectors.joining(", "));
+                String detailedMessage = e
+                        .getBindingResult()
+                        .getFieldErrors()
+                        .stream()
+                        .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                        .collect(Collectors.joining(", "));
 
                 var errorDto = new ErrorResponseDto(
-                                "Validation failed",
-                                detailedMessage,
-                                LocalDateTime.now());
+                        "Validation failed",
+                        detailedMessage,
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(errorDto);
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(errorDto);
         }
 
         @ExceptionHandler(IllegalArgumentException.class)
@@ -99,13 +102,13 @@ public class GlobalExceptionHandler {
                 log.warn("Bad request: {}", e.getMessage());
 
                 var errorDto = new ErrorResponseDto(
-                                "Bad request",
-                                e.getMessage(),
-                                LocalDateTime.now());
+                        "Bad request",
+                        e.getMessage(),
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(errorDto);
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(errorDto);
         }
 
         @ExceptionHandler(Exception.class)
@@ -113,12 +116,12 @@ public class GlobalExceptionHandler {
                 log.error("Internal server error", e);
 
                 var errorDto = new ErrorResponseDto(
-                                "Internal server error",
-                                e.getMessage(),
-                                LocalDateTime.now());
+                        "Internal server error",
+                        e.getMessage(),
+                        LocalDateTime.now());
 
                 return ResponseEntity
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(errorDto);
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(errorDto);
         }
 }
