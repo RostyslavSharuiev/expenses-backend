@@ -9,7 +9,7 @@ import rostyslav.sharuiev.expenses.user.dto.UserResponse;
 import rostyslav.sharuiev.expenses.user.entity.UserCredentialsEntity;
 import rostyslav.sharuiev.expenses.user.entity.UserEntity;
 import rostyslav.sharuiev.expenses.user.mapper.UserMapper;
-import rostyslav.sharuiev.expenses.user.repository.UserCredentialsRepository;
+import rostyslav.sharuiev.expenses.auth.repository.UserCredentialsRepository;
 import rostyslav.sharuiev.expenses.user.repository.UserRepository;
 
 import java.util.List;
@@ -57,6 +57,17 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("User with id=%s not found", id))
+                );
+
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse getUserByEmail(String email) {
+        var user = userRepository
+                .findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("User with email=%s not found", email))
                 );
 
         return userMapper.toResponse(user);
