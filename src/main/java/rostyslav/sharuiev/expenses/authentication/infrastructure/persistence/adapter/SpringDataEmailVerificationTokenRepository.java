@@ -22,16 +22,16 @@ public interface SpringDataEmailVerificationTokenRepository  extends JpaReposito
             """)
     Optional<EmailVerificationTokenJpaEntity> findByTokenHashForUpdate(@Param("tokenHash") String tokenHash);
 
-    @Modifying
+    @Modifying(
+            flushAutomatically = true,
+            clearAutomatically = true
+    )
     @Query("""
             UPDATE EmailVerificationTokenJpaEntity token
-            SET token.invalidatedAt = :invalidatedAt
+            SET token.invalidatedAt = CURRENT TIMESTAMP
             WHERE token.userId = :userId
             AND token.usedAt IS NULL
             AND token.invalidatedAt IS NULL
             """)
-    int invalidateAllByUserId(
-            @Param("userId") UUID userId,
-            @Param("invalidatedAt")Instant invalidatedAt
-    );
+    int invalidateAllByUserId(@Param("userId") UUID userId);
 }
