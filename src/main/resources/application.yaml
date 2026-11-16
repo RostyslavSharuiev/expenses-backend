@@ -13,5 +13,9 @@ spring:
 
     show-sql: true
 
+app:
+  authentication:
+    email-verification-token-ttl: 24h
+
 server:
   port: 9090

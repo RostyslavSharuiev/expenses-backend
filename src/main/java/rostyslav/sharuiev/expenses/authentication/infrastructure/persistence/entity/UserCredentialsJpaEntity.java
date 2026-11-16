@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.authentication;
+package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,11 +21,11 @@ import java.util.UUID;
         }
 )
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserCredentialsEntity {
+@NoArgsConstructor
+public class UserCredentialsJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false, updatable = false)
@@ -34,7 +34,7 @@ public class UserCredentialsEntity {
     @Column(nullable = false)
     private String passwordHash;
 
-    @Column
+    @Column(nullable = false)
     private Instant passwordChangedAt;
 
     @CreationTimestamp
@@ -45,8 +45,20 @@ public class UserCredentialsEntity {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    public void changePassword(String passwordHash, Instant changedAt) {
+    public UserCredentialsJpaEntity(
+            UUID id,
+            UUID userId,
+            String passwordHash,
+            Instant passwordChangedAt
+    ) {
+        this.id = id;
+        this.userId = userId;
         this.passwordHash = passwordHash;
-        this.passwordChangedAt = changedAt;
+        this.passwordChangedAt = passwordChangedAt;
+    }
+
+    public void updateFrom(UserCredentialsJpaEntity source) {
+        this.passwordHash = source.passwordHash;
+        this.passwordChangedAt = source.passwordChangedAt;
     }
 }

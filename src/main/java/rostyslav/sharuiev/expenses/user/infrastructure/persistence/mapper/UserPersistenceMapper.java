@@ -21,26 +21,23 @@ public class UserPersistenceMapper {
     }
 
     public UserJpaEntity toEntity(User user) {
-        UserJpaEntity entity = new UserJpaEntity();
-
-        updateEntity(user, entity);
-
-        return entity;
+        return new UserJpaEntity(
+                user.getId(),
+                user.getEmail(),
+                user.getEmailVerifiedAt(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAvatarUrl(),
+                user.getDefaultCurrency(),
+                user.getDeletedAt()
+        );
     }
 
     public void updateEntity(
             User user,
             UserJpaEntity entity
     ) {
-        entity.setId(user.getId());
-        entity.setEmail(user.getEmail());
-        entity.setEmailVerifiedAt(user.getEmailVerifiedAt());
-
-        entity.setFirstName(user.getFirstName());
-        entity.setLastName(user.getLastName());
-        entity.setAvatarUrl(user.getAvatarUrl());
-
-        entity.setDefaultCurrency(user.getDefaultCurrency());
-        entity.setDeletedAt(user.getDeletedAt());
+        UserJpaEntity source = toEntity(user);
+        entity.updateFrom(source);
     }
 }

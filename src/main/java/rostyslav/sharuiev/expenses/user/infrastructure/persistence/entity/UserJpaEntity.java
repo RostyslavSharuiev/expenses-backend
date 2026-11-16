@@ -1,6 +1,7 @@
 package rostyslav.sharuiev.expenses.user.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,14 +14,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
-@NoArgsConstructor()
+@NoArgsConstructor
 public class UserJpaEntity {
 
     @Id
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String email;
 
     @Column
@@ -48,4 +49,34 @@ public class UserJpaEntity {
     @UpdateTimestamp
     @Column(nullable = false)
     private Instant updatedAt;
+
+    public UserJpaEntity(
+            UUID id,
+            String email,
+            Instant emailVerifiedAt,
+            String firstName,
+            String lastName,
+            String avatarUrl,
+            String defaultCurrency,
+            Instant deletedAt
+    ) {
+        this.id = id;
+        this.email = email;
+        this.emailVerifiedAt = emailVerifiedAt;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.avatarUrl = avatarUrl;
+        this.defaultCurrency = defaultCurrency;
+        this.deletedAt = deletedAt;
+    }
+
+    public void updateFrom(UserJpaEntity source) {
+        this.email = source.email;
+        this.emailVerifiedAt = source.getEmailVerifiedAt();
+        this.firstName = source.firstName;
+        this.lastName = source.lastName;
+        this.avatarUrl = source.avatarUrl;
+        this.defaultCurrency = source.defaultCurrency;
+        this.deletedAt = source.deletedAt;
+    }
 }
