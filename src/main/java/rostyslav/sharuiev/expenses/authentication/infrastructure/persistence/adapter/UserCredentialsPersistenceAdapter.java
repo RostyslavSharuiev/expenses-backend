@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.out.UserCrede
 import rostyslav.sharuiev.expenses.authentication.domain.model.UserCredentials;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.UserCredentialsJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.UserCredentialsPersistenceMapper;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository.SpringDataUserCredentialsRepository;
 
 import java.util.Optional;
 import java.util.UUID;

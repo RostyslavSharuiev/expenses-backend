@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.user.infrastructure.persistence.adapter;
+package rostyslav.sharuiev.expenses.user.infrastructure.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import rostyslav.sharuiev.expenses.user.infrastructure.persistence.entity.UserJpaEntity;

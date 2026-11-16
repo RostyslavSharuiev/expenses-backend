@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.adapter;
+package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import rostyslav.sharuiev.expenses.authentication.domain.enums.OAuthProvider;

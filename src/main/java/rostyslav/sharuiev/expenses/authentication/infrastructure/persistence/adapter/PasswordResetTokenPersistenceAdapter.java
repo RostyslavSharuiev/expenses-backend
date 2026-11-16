@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.out.PasswordR
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.PasswordResetTokenJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.PasswordResetTokenPersistenceMapper;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository.SpringDataPasswordResetTokenRepository;
 
 import java.util.Optional;
 import java.util.UUID;

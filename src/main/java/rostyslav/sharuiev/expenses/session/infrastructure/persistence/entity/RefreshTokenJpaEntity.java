@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.session;
+package rostyslav.sharuiev.expenses.session.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,10 +21,9 @@ import java.util.UUID;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RefreshTokenEntity {
+public class RefreshTokenJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, updatable = false)
@@ -49,49 +48,22 @@ public class RefreshTokenEntity {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    private RefreshTokenEntity(
+    public RefreshTokenJpaEntity(
+            UUID id,
             UUID userId,
             UUID sessionId,
             String tokenHash,
             Instant expiresAt
     ) {
+        this.id = id;
         this.userId = userId;
         this.sessionId = sessionId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
     }
 
-    public static RefreshTokenEntity create(
-            UUID userId,
-            UUID sessionId,
-            String tokenHash,
-            Instant expiresAt
-    ) {
-        return new RefreshTokenEntity(userId, sessionId, tokenHash, expiresAt);
-    }
-
-    public void revoke(Instant revokedAt) {
-        if (this.revokedAt != null) {
-            return;
-        }
-
-        this.revokedAt = revokedAt;
-    }
-
-    public void replaceWith(UUID replacementTokenId, Instant revokedAt) {
-        if (this.revokedAt != null) {
-            throw new IllegalArgumentException("Refresh token has already been revoked");
-        }
-
-        this.revokedAt = revokedAt;
-        this.replacedByTokenId = replacementTokenId;
-    }
-
-    public boolean isExpired(Instant now) {
-        return !expiresAt.isAfter(now);
-    }
-
-    public boolean isRevoked() {
-        return revokedAt != null;
+    public void updateFrom(RefreshTokenJpaEntity source) {
+        this.revokedAt = source.revokedAt;
+        this.replacedByTokenId = source.replacedByTokenId;
     }
 }

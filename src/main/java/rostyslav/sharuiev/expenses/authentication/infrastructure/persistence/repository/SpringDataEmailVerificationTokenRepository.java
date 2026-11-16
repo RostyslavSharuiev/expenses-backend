@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.adapter;
+package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository;
 
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.EmailVerificationTokenJpaEntity;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 

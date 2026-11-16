@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.in.ResetPassw
 import rostyslav.sharuiev.expenses.authentication.application.port.out.*;
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.domain.model.UserCredentials;
+import rostyslav.sharuiev.expenses.session.application.port.in.SessionManagementUseCase;
 import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 
 import java.time.Clock;
@@ -23,7 +24,7 @@ public class ResetPasswordService implements ResetPasswordUseCase {
     private final UserAccountPort userAccountPort;
     private final PasswordEncoderPort passwordEncoderPort;
     private final TokenHasherPort tokenHasherPort;
-    private final SessionManagementPort sessionManagementPort;
+    private final SessionManagementUseCase sessionManagementUseCase;
     private final Clock clock;
 
     @Override
@@ -51,7 +52,7 @@ public class ResetPasswordService implements ResetPasswordUseCase {
 
         UserCredentials credentials = userCredentialsRepositoryPort
                 .findByUserId(user.id())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid of expired password reset token"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired password reset token"));
 
         String newPasswordHash = passwordEncoderPort.encode(command.newPassword());
 
@@ -62,9 +63,9 @@ public class ResetPasswordService implements ResetPasswordUseCase {
         passwordResetTokenRepositoryPort.save(token);
         passwordResetTokenRepositoryPort.invalidateAllByUserId(userId);
 
-        sessionManagementPort.revokeAllSessions(userId);
+        sessionManagementUseCase.revokeAllSessions(userId);
 
-        SessionManagementPort.SessionsTokens sessionsTokens = sessionManagementPort.createSession(userId);
+        SessionManagementUseCase.SessionsTokens sessionsTokens = sessionManagementUseCase.createSession(userId);
 
         return new ResetPasswordResult(
                 sessionsTokens.accessToken(),
@@ -83,7 +84,7 @@ public class ResetPasswordService implements ResetPasswordUseCase {
         }
 
         if (command.newPassword() == null || command.newPassword().isBlank()) {
-            throw new IllegalArgumentException("New password must not be null");
+            throw new IllegalArgumentException("New password must not be blank");
         }
     }
 }

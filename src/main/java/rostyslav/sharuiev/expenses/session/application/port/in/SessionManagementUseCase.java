@@ -1,8 +1,8 @@
-package rostyslav.sharuiev.expenses.authentication.application.port.out;
+package rostyslav.sharuiev.expenses.session.application.port.in;
 
 import java.util.UUID;
 
-public interface SessionManagementPort {
+public interface SessionManagementUseCase {
 
     SessionsTokens createSession(UUID userId);
 

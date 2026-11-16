@@ -8,6 +8,7 @@ import rostyslav.sharuiev.expenses.authentication.domain.enums.OAuthProvider;
 import rostyslav.sharuiev.expenses.authentication.domain.model.OAuthAccount;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.OAuthAccountJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.OAuthAccountPersistenceMapper;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository.SpringDataOAuthAccountRepository;
 
 import java.util.List;
 import java.util.Optional;

@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.out.EmailVeri
 import rostyslav.sharuiev.expenses.authentication.domain.model.EmailVerificationToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.EmailVerificationTokenJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.EmailVerificationTokenPersistenceMapper;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.repository.SpringDataEmailVerificationTokenRepository;
 
 import java.util.Optional;
 import java.util.UUID;

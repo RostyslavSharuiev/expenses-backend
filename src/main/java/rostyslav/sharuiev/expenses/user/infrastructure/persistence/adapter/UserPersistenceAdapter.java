@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.user.application.port.out.UserRepositoryPort;
 import rostyslav.sharuiev.expenses.user.domain.model.User;
 import rostyslav.sharuiev.expenses.user.infrastructure.persistence.entity.UserJpaEntity;
 import rostyslav.sharuiev.expenses.user.infrastructure.persistence.mapper.UserPersistenceMapper;
+import rostyslav.sharuiev.expenses.user.infrastructure.persistence.repository.SpringDataUserRepository;
 
 import java.util.Optional;
 import java.util.UUID;
