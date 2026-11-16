@@ -2,6 +2,7 @@ package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.en
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
                 )
         }
 )
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailVerificationTokenJpaEntity {
 
@@ -49,7 +51,6 @@ public class EmailVerificationTokenJpaEntity {
             UUID userId,
             String tokenHash,
             Instant expiresAt,
-            Instant createdAt,
             Instant usedAt,
             Instant invalidatedAt
     ) {
@@ -57,7 +58,6 @@ public class EmailVerificationTokenJpaEntity {
         this.userId = userId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
-        this.createdAt = createdAt;
         this.usedAt = usedAt;
         this.invalidatedAt = invalidatedAt;
     }
