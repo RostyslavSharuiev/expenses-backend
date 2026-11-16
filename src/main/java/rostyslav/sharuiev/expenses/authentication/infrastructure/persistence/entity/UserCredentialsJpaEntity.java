@@ -21,7 +21,7 @@ import java.util.UUID;
         }
 )
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserCredentialsJpaEntity {
 
     @Id

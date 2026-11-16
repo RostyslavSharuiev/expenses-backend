@@ -16,6 +16,7 @@ public class EmailVerificationToken {
     private final Instant createdAt;
 
     private Instant usedAt;
+    private Instant invalidatedAt;
 
     private EmailVerificationToken(
             UUID id,
@@ -23,22 +24,28 @@ public class EmailVerificationToken {
             String tokenHash,
             Instant expiresAt,
             Instant createdAt,
-            Instant usedAt
+            Instant usedAt,
+            Instant invalidatedAt
     ) {
         this.id = Objects.requireNonNull(id, "id cannot be null");
         this.userId = Objects.requireNonNull(userId, "userId cannot be null");
         this.tokenHash = validateTokenHash(tokenHash);
         this.expiresAt = Objects.requireNonNull(expiresAt, "expiresAt cannot be null");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt cannot be null");
-        this.usedAt = usedAt;
 
         if (!expiresAt.isAfter(createdAt)) {
             throw new IllegalArgumentException("expiresAt must be after createdAt");
         }
 
-        if (usedAt != null && usedAt.isBefore(createdAt)) {
-            throw new IllegalArgumentException("usedAt cannot be before createdAt");
+        validateStateTimestamp(usedAt, "usedAt", createdAt);
+        validateStateTimestamp(invalidatedAt, "invalidatedAt", createdAt);
+
+        if (usedAt != null && invalidatedAt != null) {
+            throw new IllegalArgumentException("Token cannot be both used and invalidated");
         }
+
+        this.usedAt = usedAt;
+        this.invalidatedAt = invalidatedAt;
     }
 
     public static EmailVerificationToken create(
@@ -53,6 +60,7 @@ public class EmailVerificationToken {
                 tokenHash,
                 expiresAt,
                 createdAt,
+                null,
                 null
         );
     }
@@ -63,7 +71,8 @@ public class EmailVerificationToken {
             String tokenHash,
             Instant expiresAt,
             Instant createdAt,
-            Instant usedAt
+            Instant usedAt,
+            Instant invalidatedAt
     ) {
         return new EmailVerificationToken(
                 id,
@@ -71,7 +80,8 @@ public class EmailVerificationToken {
                 tokenHash,
                 expiresAt,
                 createdAt,
-                usedAt
+                usedAt,
+                invalidatedAt
         );
     }
 
@@ -85,18 +95,48 @@ public class EmailVerificationToken {
         return usedAt != null;
     }
 
+    public boolean isInvalidated() {
+        return invalidatedAt != null;
+    }
+
     public boolean isUsableAt(Instant now) {
-        return !isUsed() && !isExpired(now);
+        Objects.requireNonNull(now, "now cannot be null");
+
+        return !isUsed()
+                && !isInvalidated()
+                && !isExpired(now);
     }
 
     public void markAsUsed(Instant now) {
-        Objects.requireNonNull(now, "now cannot be null");
+        validateTransitionTimestamp(now);
 
-        if (!isUsableAt(now)) {
-            throw new IllegalStateException("Email verification token is no longer usable");
+        if (isUsed()) {
+            throw new IllegalStateException("Token has already been used");
+        }
+
+        if (isInvalidated()) {
+            throw new IllegalStateException("Token has been invalidated");
+        }
+
+        if (isExpired(now)) {
+            throw new IllegalStateException("Token has expired");
         }
 
         this.usedAt = now;
+    }
+
+    public void invalidate(Instant now) {
+        validateTransitionTimestamp(now);
+
+        if (isUsed()) {
+            throw new IllegalStateException("Used token cannot be invalidated");
+        }
+
+        if (isInvalidated()) {
+            throw new IllegalStateException("Token has already been invalidated");
+        }
+
+        this.invalidatedAt = now;
     }
 
     private static String validateTokenHash(String tokenHash) {
@@ -107,5 +147,25 @@ public class EmailVerificationToken {
         }
 
         return tokenHash;
+    }
+
+    private static void validateStateTimestamp(
+            Instant timestamp,
+            String fieldName,
+            Instant createdAt
+    ) {
+        if (timestamp != null && timestamp.isBefore(createdAt)) {
+            throw new IllegalArgumentException(
+                    String.format("%s cannot be before createdAt", fieldName)
+            );
+        }
+    }
+
+    private void validateTransitionTimestamp(Instant now) {
+        Objects.requireNonNull(now, "now cannot be null");
+
+        if (now.isBefore(createdAt)) {
+            throw new IllegalArgumentException("Transition timestamp cannot be before createdAt");
+        }
     }
 }
