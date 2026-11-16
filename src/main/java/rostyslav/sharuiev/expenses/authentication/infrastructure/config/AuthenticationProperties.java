@@ -6,6 +6,7 @@ import java.time.Duration;
 
 @ConfigurationProperties(prefix = "app.authentication")
 public record AuthenticationProperties(
-        Duration emailVerificationTokenTtl
+        Duration emailVerificationTokenTtl,
+        Duration passwordResetTokenTtl
 ) {
 }

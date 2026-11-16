@@ -12,6 +12,8 @@ public interface UserAccountPort {
 
     Optional<UserAccount> findByEmail(String email);
 
+    void verifyEmail(UUID userId, Instant verifiedAt);
+
     record UserAccount(
             UUID id,
             String email,

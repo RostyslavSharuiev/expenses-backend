@@ -7,6 +7,7 @@ import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 import rostyslav.sharuiev.expenses.user.application.port.out.UserRepositoryPort;
 import rostyslav.sharuiev.expenses.user.domain.model.User;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,6 +48,19 @@ public class UserApplicationService implements UserAccountPort {
         return userRepositoryPort
                 .findByEmail(email)
                 .map(this::toAccount);
+    }
+
+    @Override
+    public void verifyEmail(UUID userId, Instant verifiedAt) {
+        User user = userRepositoryPort
+                .findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("User not found: %s", userId)
+                ));
+
+        user.verifyEmail(verifiedAt);
+
+        userRepositoryPort.save(user);
     }
 
     private UserAccount toAccount(User user) {

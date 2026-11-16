@@ -16,6 +16,7 @@ spring:
 app:
   authentication:
     email-verification-token-ttl: 24h
+    password-reset-token-ttl: 30m
 
 server:
   port: 9090
