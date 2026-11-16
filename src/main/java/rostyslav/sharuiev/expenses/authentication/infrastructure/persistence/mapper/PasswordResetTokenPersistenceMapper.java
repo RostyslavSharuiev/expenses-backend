@@ -1,8 +1,10 @@
 package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper;
 
+import org.springframework.stereotype.Component;
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.PasswordResetTokenJpaEntity;
 
+@Component
 public class PasswordResetTokenPersistenceMapper {
 
     public PasswordResetToken toDomain(PasswordResetTokenJpaEntity entity) {
