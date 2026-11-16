@@ -40,7 +40,7 @@ public class PasswordResetTokenJpaEntity {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(nullable = false, updatable = false)
+    @Column
     private Instant usedAt;
 
     @Column
@@ -62,7 +62,7 @@ public class PasswordResetTokenJpaEntity {
         this.invalidatedAt = invalidatedAt;
     }
 
-    public void updatedFrom(PasswordResetTokenJpaEntity source) {
+    public void updateFrom(PasswordResetTokenJpaEntity source) {
         this.usedAt = source.usedAt;
         this.invalidatedAt = source.invalidatedAt;
     }

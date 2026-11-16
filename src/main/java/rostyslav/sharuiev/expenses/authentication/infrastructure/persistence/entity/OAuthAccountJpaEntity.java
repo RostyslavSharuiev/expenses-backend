@@ -18,7 +18,7 @@ import java.util.UUID;
                         columnNames = {"user_id", "provider"}
                 ),
                 @UniqueConstraint(
-                        name = "uk_oauth_accounts_user_id",
+                        name = "uk_oauth_accounts_provider_user_id",
                         columnNames = {"provider", "provider_user_id"}
                 )
         }

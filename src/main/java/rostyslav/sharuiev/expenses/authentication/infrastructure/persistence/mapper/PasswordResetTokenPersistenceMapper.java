@@ -35,6 +35,6 @@ public class PasswordResetTokenPersistenceMapper {
             PasswordResetTokenJpaEntity entity
     ) {
         PasswordResetTokenJpaEntity source = toEntity(token);
-        entity.updatedFrom(source);
+        entity.updateFrom(source);
     }
 }
