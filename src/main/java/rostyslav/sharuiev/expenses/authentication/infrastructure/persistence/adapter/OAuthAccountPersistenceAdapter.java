@@ -3,7 +3,7 @@ package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.ad
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import rostyslav.sharuiev.expenses.authentication.application.out.OAuthAccountRepositoryPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.OAuthAccountRepositoryPort;
 import rostyslav.sharuiev.expenses.authentication.domain.enums.OAuthProvider;
 import rostyslav.sharuiev.expenses.authentication.domain.model.OAuthAccount;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.OAuthAccountJpaEntity;

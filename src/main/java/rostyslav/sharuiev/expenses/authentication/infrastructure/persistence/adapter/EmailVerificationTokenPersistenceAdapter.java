@@ -3,7 +3,7 @@ package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.ad
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import rostyslav.sharuiev.expenses.authentication.application.out.EmailVerificationTokenRepositoryPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.EmailVerificationTokenRepositoryPort;
 import rostyslav.sharuiev.expenses.authentication.domain.model.EmailVerificationToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.EmailVerificationTokenJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.EmailVerificationTokenPersistenceMapper;

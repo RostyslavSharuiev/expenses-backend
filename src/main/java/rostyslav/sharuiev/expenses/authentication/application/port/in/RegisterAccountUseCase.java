@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.authentication.application.in;
+package rostyslav.sharuiev.expenses.authentication.application.port.in;
 
 
 import java.util.UUID;

@@ -3,7 +3,7 @@ package rostyslav.sharuiev.expenses.authentication.infrastructure.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import rostyslav.sharuiev.expenses.authentication.application.out.PasswordEncoderPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.PasswordEncoderPort;
 
 @Component
 @RequiredArgsConstructor

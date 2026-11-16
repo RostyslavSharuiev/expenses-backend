@@ -3,7 +3,7 @@ package rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.ad
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import rostyslav.sharuiev.expenses.authentication.application.out.PasswordResetTokenRepositoryPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.PasswordResetTokenRepositoryPort;
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.entity.PasswordResetTokenJpaEntity;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.persistence.mapper.PasswordResetTokenPersistenceMapper;

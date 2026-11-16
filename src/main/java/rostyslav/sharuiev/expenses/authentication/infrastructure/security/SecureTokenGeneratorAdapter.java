@@ -1,7 +1,7 @@
 package rostyslav.sharuiev.expenses.authentication.infrastructure.security;
 
 import org.springframework.stereotype.Component;
-import rostyslav.sharuiev.expenses.authentication.application.out.SecureTokenGeneratorPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.SecureTokenGeneratorPort;
 
 import java.security.SecureRandom;
 import java.util.Base64;

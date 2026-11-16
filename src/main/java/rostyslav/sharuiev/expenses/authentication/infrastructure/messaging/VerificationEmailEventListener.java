@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import rostyslav.sharuiev.expenses.authentication.application.event.VerificationEmailRequestedEvent;
-import rostyslav.sharuiev.expenses.authentication.application.out.EmailSenderPort;
+import rostyslav.sharuiev.expenses.authentication.application.port.out.EmailSenderPort;
 
 @Slf4j
 @Component
