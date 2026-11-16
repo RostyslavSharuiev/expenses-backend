@@ -28,7 +28,7 @@ public interface SpringDataEmailVerificationTokenRepository  extends JpaReposito
     )
     @Query("""
             UPDATE EmailVerificationTokenJpaEntity token
-            SET token.invalidatedAt = CURRENT TIMESTAMP
+            SET token.invalidatedAt = CURRENT_TIMESTAMP
             WHERE token.userId = :userId
             AND token.usedAt IS NULL
             AND token.invalidatedAt IS NULL
