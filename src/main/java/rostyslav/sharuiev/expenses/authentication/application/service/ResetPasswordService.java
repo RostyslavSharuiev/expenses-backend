@@ -25,6 +25,7 @@ public class ResetPasswordService implements ResetPasswordUseCase {
     private final PasswordEncoderPort passwordEncoderPort;
     private final TokenHasherPort tokenHasherPort;
     private final SessionManagementUseCase sessionManagementUseCase;
+    private final AccessTokenProviderPort accessTokenProviderPort;
     private final Clock clock;
 
     @Override
@@ -65,12 +66,14 @@ public class ResetPasswordService implements ResetPasswordUseCase {
 
         sessionManagementUseCase.revokeAllSessions(userId);
 
-        SessionManagementUseCase.SessionsTokens sessionsTokens = sessionManagementUseCase.createSession(userId);
+        String refreshToken = sessionManagementUseCase.createSession(userId);
+
+        AccessTokenProviderPort.AccessToken accessToken = accessTokenProviderPort.generate(userId);
 
         return new ResetPasswordResult(
-                sessionsTokens.accessToken(),
-                sessionsTokens.refreshToken(),
-                sessionsTokens.accessTokenExpiresIn()
+                accessToken.value(),
+                refreshToken,
+                accessToken.expiresIn()
         );
     }
 

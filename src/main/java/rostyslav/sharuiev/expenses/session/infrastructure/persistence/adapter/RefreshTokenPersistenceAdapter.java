@@ -81,4 +81,20 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenRepositoryPor
             }
         });
     }
+
+    @Override
+    public void revokeAllByUserId(UUID userId) {
+        Instant revokedAt = Instant.now();
+
+        List<RefreshTokenJpaEntity> entities = repository.findAllByUserId(userId);
+
+        entities.forEach(entity -> {
+            RefreshToken token = mapper.toDomain(entity);
+
+            if (!token.isRevoked()) {
+                token.revoke(revokedAt);
+                mapper.updateEntity(token, entity);
+            }
+        });
+    }
 }

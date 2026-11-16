@@ -17,4 +17,6 @@ public interface RefreshTokenRepositoryPort {
     List<RefreshToken> findAllBySessionId(UUID sessionId);
 
     void revokeAllBySessionId(UUID sessionId);
+
+    void revokeAllByUserId(UUID userId);
 }

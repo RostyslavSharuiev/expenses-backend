@@ -18,5 +18,8 @@ app:
     email-verification-token-ttl: 24h
     password-reset-token-ttl: 30m
 
+  session:
+    refresh-token-ttl: 30d
+
 server:
   port: 9090

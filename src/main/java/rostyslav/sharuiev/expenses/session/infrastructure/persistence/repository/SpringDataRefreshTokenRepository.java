@@ -22,4 +22,6 @@ public interface SpringDataRefreshTokenRepository extends JpaRepository<RefreshT
     Optional<RefreshTokenJpaEntity> findByTokenHashForUpdate(@Param("tokenHash") String tokenHash);
 
     List<RefreshTokenJpaEntity> findAllBySessionId(UUID sessionId);
+
+    List<RefreshTokenJpaEntity> findAllByUserId(UUID userId);
 }
