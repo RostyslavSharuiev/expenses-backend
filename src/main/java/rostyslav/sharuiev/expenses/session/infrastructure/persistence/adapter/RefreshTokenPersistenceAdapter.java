@@ -9,6 +9,7 @@ import rostyslav.sharuiev.expenses.session.infrastructure.persistence.entity.Ref
 import rostyslav.sharuiev.expenses.session.infrastructure.persistence.mapper.RefreshTokenPersistenceMapper;
 import rostyslav.sharuiev.expenses.session.infrastructure.persistence.repository.SpringDataRefreshTokenRepository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenRepositoryPor
 
     private final SpringDataRefreshTokenRepository repository;
     private final RefreshTokenPersistenceMapper mapper;
+    private final Clock clock;
 
     @Override
     public RefreshToken save(RefreshToken token) {
@@ -68,9 +70,9 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenRepositoryPor
 
     @Override
     public void revokeAllBySessionId(UUID sessionId) {
-        Instant revokedAt = Instant.now();
+        Instant revokedAt = clock.instant();
 
-        List<RefreshTokenJpaEntity> entities = repository.findAllBySessionId(sessionId);
+        List<RefreshTokenJpaEntity> entities = repository.findAllBySessionIdForUpdate(sessionId);
 
         entities.forEach(entity -> {
             RefreshToken token = mapper.toDomain(entity);
@@ -84,9 +86,9 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenRepositoryPor
 
     @Override
     public void revokeAllByUserId(UUID userId) {
-        Instant revokedAt = Instant.now();
+        Instant revokedAt = clock.instant();
 
-        List<RefreshTokenJpaEntity> entities = repository.findAllByUserId(userId);
+        List<RefreshTokenJpaEntity> entities = repository.findAllByUserIdForUpdate(userId);
 
         entities.forEach(entity -> {
             RefreshToken token = mapper.toDomain(entity);

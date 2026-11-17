@@ -23,5 +23,22 @@ public interface SpringDataRefreshTokenRepository extends JpaRepository<RefreshT
 
     List<RefreshTokenJpaEntity> findAllBySessionId(UUID sessionId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT token
+            FROM RefreshTokenJpaEntity token
+            WHERE token.sessionId = :sessionId
+            """)
+    List<RefreshTokenJpaEntity> findAllBySessionIdForUpdate(@Param("sessionId") UUID sessionId);
+
     List<RefreshTokenJpaEntity> findAllByUserId(UUID userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT token
+            FROM RefreshTokenJpaEntity token
+            WHERE token.userId = :userId
+            """)
+    List<RefreshTokenJpaEntity> findAllByUserIdForUpdate(@Param("userId") UUID userId);
+
 }
