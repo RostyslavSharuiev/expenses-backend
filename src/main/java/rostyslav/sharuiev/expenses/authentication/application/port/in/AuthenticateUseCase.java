@@ -4,10 +4,17 @@ import java.util.UUID;
 
 public interface AuthenticateUseCase {
 
-    UUID authenticate(AuthenticateCommand command);
+    AuthenticationResult authenticate(AuthenticateCommand command);
 
     record AuthenticateCommand(
             String email,
             String password
+    ) {}
+
+    record AuthenticationResult(
+            UUID userId,
+            String accessToken,
+            String refreshToken,
+            long accessTokenExpiresIn
     ) {}
 }
