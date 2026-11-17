@@ -71,7 +71,8 @@ class JwtAccessTokenProviderAdapterTest {
 
         AccessTokenProviderPort.AccessToken result = adapter.generate(userId);
 
-        Claims claims = Jwts.parser()
+        Claims claims = Jwts
+                .parser()
                 .verifyWith(signingKey)
                 .clock(() -> Date.from(NOW))
                 .build()

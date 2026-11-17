@@ -16,6 +16,8 @@ import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Currency;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,8 @@ public class RegisterAccountService implements RegisterAccountUseCase {
     @Override
     @Transactional
     public RegistrationResult register(RegisterAccountCommand command) {
+        validateCommand(command);
+
         Instant now = clock.instant();
 
         // 1. Create user account
@@ -86,5 +90,39 @@ public class RegisterAccountService implements RegisterAccountUseCase {
                 user.id(),
                 user.email()
         );
+    }
+
+    private void validateCommand(RegisterAccountCommand command) {
+        if (command == null) {
+            throw new IllegalArgumentException("Command must not be null");
+        }
+
+        if (command.email() == null || command.email().isBlank()) {
+            throw new IllegalArgumentException("Email must not be blank");
+        }
+
+        if (command.password() == null || command.password().isBlank()) {
+            throw new IllegalArgumentException("Password must not be blank");
+        }
+
+        validateCurrency(command.defaultCurrency());
+    }
+
+    private void validateCurrency(String currency) {
+        if (currency == null || currency.isBlank()) {
+            throw new IllegalArgumentException("Currency must not be blank");
+        }
+
+        Currency parsedCurrency;
+
+        try {
+            parsedCurrency = Currency.getInstance(currency.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(String.format("Unsupported currency: %s", currency), ex);
+        }
+
+        if ("XXX".equals(parsedCurrency.getCurrencyCode())) {
+            throw new IllegalArgumentException(String.format("Unsupported currency: %s", currency));
+        }
     }
 }
