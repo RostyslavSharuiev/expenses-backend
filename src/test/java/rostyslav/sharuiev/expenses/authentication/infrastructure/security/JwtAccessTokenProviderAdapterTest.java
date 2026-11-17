@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JwtAccessTokenProviderAdapterTest {
+class JwtAccessTokenProviderAdapterTest {
 
     private static final String JWT_ISSUER = "expenses-api";
     private static final Duration ACCESS_TOKEN_TTL = Duration.ofMinutes(15);
