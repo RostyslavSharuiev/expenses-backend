@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import rostyslav.sharuiev.expenses.session.application.exception.RefreshTokenReuseException;
 import rostyslav.sharuiev.expenses.session.application.port.in.RotateRefreshTokenUseCase;
 import rostyslav.sharuiev.expenses.session.application.port.out.RefreshTokenRepositoryPort;
-import rostyslav.sharuiev.expenses.session.application.port.out.SecureTokenGeneratorPort;
-import rostyslav.sharuiev.expenses.session.application.port.out.TokenHasherPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.SecureTokenGeneratorPort;
 import rostyslav.sharuiev.expenses.session.domain.model.RefreshToken;
 import rostyslav.sharuiev.expenses.session.infrastructure.config.SessionProperties;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 
 import java.time.Clock;
 import java.time.Instant;

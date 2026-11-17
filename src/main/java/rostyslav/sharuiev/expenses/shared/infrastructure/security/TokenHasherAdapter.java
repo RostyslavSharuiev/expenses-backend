@@ -1,7 +1,7 @@
-package rostyslav.sharuiev.expenses.authentication.infrastructure.security;
+package rostyslav.sharuiev.expenses.shared.infrastructure.security;
 
 import org.springframework.stereotype.Component;
-import rostyslav.sharuiev.expenses.authentication.application.port.out.TokenHasherPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -26,7 +26,7 @@ public class TokenHasherAdapter implements TokenHasherPort {
 
             return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException ex) {
-            throw  new IllegalStateException("SHA-256 algorithm is not available", ex);
+            throw new IllegalStateException("SHA-256 algorithm is not available", ex);
         }
     }
 }

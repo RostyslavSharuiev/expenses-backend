@@ -10,7 +10,9 @@ import rostyslav.sharuiev.expenses.authentication.application.port.out.*;
 import rostyslav.sharuiev.expenses.authentication.domain.model.EmailVerificationToken;
 import rostyslav.sharuiev.expenses.authentication.domain.model.UserCredentials;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.config.AuthenticationProperties;
+import rostyslav.sharuiev.expenses.shared.application.port.out.SecureTokenGeneratorPort;
 import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 
 import java.time.Clock;
 import java.time.Instant;

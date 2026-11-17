@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rostyslav.sharuiev.expenses.authentication.application.port.in.VerifyEmailUseCase;
 import rostyslav.sharuiev.expenses.authentication.application.port.out.EmailVerificationTokenRepositoryPort;
-import rostyslav.sharuiev.expenses.authentication.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.authentication.domain.model.EmailVerificationToken;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 
 import java.time.Clock;

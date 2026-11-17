@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import rostyslav.sharuiev.expenses.authentication.application.event.PasswordResetEmailRequestedEvent;
 import rostyslav.sharuiev.expenses.authentication.application.port.in.RequestPasswordResetUseCase;
 import rostyslav.sharuiev.expenses.authentication.application.port.out.PasswordResetTokenRepositoryPort;
-import rostyslav.sharuiev.expenses.authentication.application.port.out.SecureTokenGeneratorPort;
-import rostyslav.sharuiev.expenses.authentication.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.config.AuthenticationProperties;
+import rostyslav.sharuiev.expenses.shared.application.port.out.SecureTokenGeneratorPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 
 import java.time.Clock;

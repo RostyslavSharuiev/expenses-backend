@@ -1,4 +1,4 @@
-package rostyslav.sharuiev.expenses.authentication.application.port.out;
+package rostyslav.sharuiev.expenses.shared.application.port.out;
 
 public interface TokenHasherPort {
 

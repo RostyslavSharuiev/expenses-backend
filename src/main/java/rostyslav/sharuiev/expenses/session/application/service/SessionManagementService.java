@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rostyslav.sharuiev.expenses.session.application.port.in.SessionManagementUseCase;
 import rostyslav.sharuiev.expenses.session.application.port.out.RefreshTokenRepositoryPort;
-import rostyslav.sharuiev.expenses.session.application.port.out.SecureTokenGeneratorPort;
-import rostyslav.sharuiev.expenses.session.application.port.out.TokenHasherPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.SecureTokenGeneratorPort;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.session.domain.model.RefreshToken;
 import rostyslav.sharuiev.expenses.session.infrastructure.config.SessionProperties;
 

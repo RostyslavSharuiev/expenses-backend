@@ -8,6 +8,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.out.*;
 import rostyslav.sharuiev.expenses.authentication.domain.model.PasswordResetToken;
 import rostyslav.sharuiev.expenses.authentication.domain.model.UserCredentials;
 import rostyslav.sharuiev.expenses.session.application.port.in.SessionManagementUseCase;
+import rostyslav.sharuiev.expenses.shared.application.port.out.TokenHasherPort;
 import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 
 import java.time.Clock;
