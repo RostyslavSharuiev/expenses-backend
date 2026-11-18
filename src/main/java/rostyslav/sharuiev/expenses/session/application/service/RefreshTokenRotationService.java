@@ -26,7 +26,7 @@ public class RefreshTokenRotationService implements RotateRefreshTokenUseCase {
 
     @Override
     @Transactional(noRollbackFor = RefreshTokenReuseException.class)
-    public String rotateRefreshToken(String rawRefreshToken) {
+    public RotationResult rotateRefreshToken(String rawRefreshToken) {
         if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
             throw new IllegalArgumentException("Refresh token must not be blank");
         }
@@ -67,6 +67,9 @@ public class RefreshTokenRotationService implements RotateRefreshTokenUseCase {
         refreshTokenRepositoryPort.save(currentToken);
         refreshTokenRepositoryPort.save(newToken);
 
-        return newRawToken;
+        return new RotationResult(
+                currentToken.getUserId(),
+                newRawToken
+        );
     }
 }
