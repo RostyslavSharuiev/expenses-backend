@@ -9,9 +9,36 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
     show-sql: true
+
+  mail:
+    host: localhost
+    port: 1025
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+app:
+  authentication:
+    email-verification-token-ttl: 24h
+    password-reset-token-ttl: 30m
+    jwt-secret: cvbg92mRhsnezNiDnBp10YnDZSiqRNvJgLFvAKPH+10=
+    access-token-ttl: 15m
+    jwt-issuer: expenses-api
+
+  session:
+    refresh-token-ttl: 30d
+
+  email:
+    from: no-reply@expenses.local
+    frontend-base-url: http://localhost:3000
 
 server:
   port: 9090
