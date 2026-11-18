@@ -1,9 +1,5 @@
 package rostyslav.sharuiev.expenses.authentication.infrastructure.web.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +18,6 @@ import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.Lo
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(
-        name = "Authentication",
-        description = "Endpoints for account registration, authentication, email verification and session management"
-)
 public class AuthenticationController {
 
     private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
@@ -41,28 +33,6 @@ public class AuthenticationController {
     private final SessionManagementUseCase sessionManagementUseCase;
 
     @PostMapping("/login")
-    @Operation(
-            summary = "Authenticate user",
-            description = """
-                    Authenticates a user using email and password.
-                    
-                    Returns an access token in the response body and sets a refresh token in an HttpOnly cookie.
-                    """
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Authentication successful"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request data"
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Invalid credentials"
-            )
-    })
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         var result = authenticateUseCase.authenticate(
                 new AuthenticateUseCase.AuthenticateCommand(
@@ -93,24 +63,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    @Operation(
-            summary = "Register account",
-            description = """
-                    Creates a new user account and initiates email verification.
-                    
-                    An email verification message is sent to the provided email address.
-                    """
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Account successfully created"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request data"
-            )
-    })
     public ResponseEntity<RegisterAccountResponse> register(@Valid @RequestBody RegisterAccountRequest request) {
         var result = registerAccountUseCase.register(
                 new RegisterAccountUseCase.RegisterAccountCommand(
@@ -181,27 +133,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    @Operation(
-            summary = "Refresh authentication tokens",
-            description = """
-                    Rotates the refresh token and issues a new access token.
-                    
-                    The refresh token must be provided in the refresh_token cookie.
-                    The previous refresh token becomes invalid.
-                    
-                    The new refresh token is returned as an HttpOnly cookie.
-                    """
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Tokens successfully refreshed"
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Refresh token is missing, invalid, expired or revoked"
-            )
-    })
     public ResponseEntity<LoginResponse> refresh(
             @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String refreshToken
     ) {
@@ -229,20 +160,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    @Operation(
-            summary = "Logout",
-            description = """
-                    Revokes the current session associated with the refresh token and clears the refresh_token cookie.
-                    
-                    The endpoint is idempotent. It returns success even if the refresh token is missing or invalid.
-                    """
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "Session revoked and refresh cookie cleared"
-            )
-    })
     public ResponseEntity<Void> logout(
             @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String refreshToken
     ) {
