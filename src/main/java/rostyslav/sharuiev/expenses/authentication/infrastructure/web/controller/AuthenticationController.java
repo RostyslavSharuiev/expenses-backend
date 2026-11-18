@@ -10,16 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rostyslav.sharuiev.expenses.authentication.application.port.in.AuthenticateUseCase;
-import rostyslav.sharuiev.expenses.authentication.application.port.in.RegisterAccountUseCase;
-import rostyslav.sharuiev.expenses.authentication.application.port.in.ResendVerificationEmailUseCase;
-import rostyslav.sharuiev.expenses.authentication.application.port.in.VerifyEmailUseCase;
-import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.RegisterAccountRequest;
-import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.ResendVerificationEmailRequest;
-import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.VerifyEmailRequest;
+import rostyslav.sharuiev.expenses.authentication.application.port.in.*;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.*;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.RegisterAccountResponse;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.ResetPasswordResponse;
 import rostyslav.sharuiev.expenses.session.infrastructure.config.SessionProperties;
-import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.LoginRequest;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.LoginResponse;
 
 @RestController
@@ -34,6 +29,7 @@ public class AuthenticationController {
     private final SessionProperties sessionProperties;
     private final VerifyEmailUseCase verifyEmailUseCase;
     private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
+    private final ResetPasswordUseCase resetPasswordUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -97,5 +93,34 @@ public class AuthenticationController {
         resendVerificationEmailUseCase.resendVerificationEmail(request.email());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        var result = resetPasswordUseCase.resetPassword(
+                new ResetPasswordUseCase.ResetPasswordCommand(
+                        request.token(),
+                        request.newPassword()
+                )
+        );
+
+        var refreshTokenCookie = ResponseCookie
+                .from(REFRESH_TOKEN_COOKIE, result.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/api/auth")
+                .maxAge(sessionProperties.refreshTokenTtl())
+                .build();
+
+        var response = new ResetPasswordResponse(
+                result.accessToken(),
+                result.accessTokenExpiresIn()
+        );
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(response);
     }
 }
