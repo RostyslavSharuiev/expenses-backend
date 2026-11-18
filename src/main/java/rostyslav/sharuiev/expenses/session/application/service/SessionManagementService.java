@@ -46,6 +46,21 @@ public class SessionManagementService implements SessionManagementUseCase {
     }
 
     @Override
+    public void revokeSession(String rawRefreshToken) {
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            return;
+        }
+
+        String tokenHash = tokenHasherPort.hash(rawRefreshToken);
+
+        refreshTokenRepositoryPort
+                .findByTokenHashForUpdate(tokenHash)
+                .ifPresent(refreshToken -> refreshTokenRepositoryPort
+                        .revokeAllBySessionId(refreshToken.getSessionId())
+                );
+    }
+
+    @Override
     public void revokeAllSessions(UUID userId) {
         refreshTokenRepositoryPort.revokeAllByUserId(userId);
     }

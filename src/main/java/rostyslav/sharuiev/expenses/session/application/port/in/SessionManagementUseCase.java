@@ -6,5 +6,7 @@ public interface SessionManagementUseCase {
 
     String createSession(UUID userId);
 
+    void revokeSession(String rawRefreshToken);
+
     void revokeAllSessions(UUID userId);
 }

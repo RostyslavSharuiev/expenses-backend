@@ -11,6 +11,7 @@ import rostyslav.sharuiev.expenses.authentication.application.port.in.*;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.*;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.RegisterAccountResponse;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.ResetPasswordResponse;
+import rostyslav.sharuiev.expenses.session.application.port.in.SessionManagementUseCase;
 import rostyslav.sharuiev.expenses.session.infrastructure.config.SessionProperties;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.LoginResponse;
 
@@ -29,6 +30,7 @@ public class AuthenticationController {
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final ForgotPasswordUseCase forgotPasswordUseCase;
     private final RefreshAuthenticationUseCase refreshAuthenticationUseCase;
+    private final SessionManagementUseCase sessionManagementUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -155,5 +157,26 @@ public class AuthenticationController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String refreshToken
+    ) {
+        sessionManagementUseCase.revokeSession(refreshToken);
+
+        var cookie = ResponseCookie
+                .from(REFRESH_TOKEN_COOKIE, "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/api/auth")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity
+                .noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 }
