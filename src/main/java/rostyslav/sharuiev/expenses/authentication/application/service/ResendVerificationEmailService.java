@@ -15,6 +15,7 @@ import rostyslav.sharuiev.expenses.user.application.port.in.UserAccountPort;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -32,7 +33,13 @@ public class ResendVerificationEmailService implements ResendVerificationEmailUs
 
     @Override
     public void resendVerificationEmail(String email) {
-        Optional<UserAccountPort.UserAccount> userOptional = userAccountPort.findByEmail(email);
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email must not be blank");
+        }
+
+        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
+
+        Optional<UserAccountPort.UserAccount> userOptional = userAccountPort.findByEmail(normalizedEmail);
 
         if (userOptional.isEmpty()) {
             return;

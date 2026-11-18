@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rostyslav.sharuiev.expenses.authentication.application.port.in.AuthenticateUseCase;
 import rostyslav.sharuiev.expenses.authentication.application.port.in.RegisterAccountUseCase;
+import rostyslav.sharuiev.expenses.authentication.application.port.in.ResendVerificationEmailUseCase;
+import rostyslav.sharuiev.expenses.authentication.application.port.in.VerifyEmailUseCase;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.RegisterAccountRequest;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.ResendVerificationEmailRequest;
+import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.VerifyEmailRequest;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.RegisterAccountResponse;
 import rostyslav.sharuiev.expenses.session.infrastructure.config.SessionProperties;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.LoginRequest;
@@ -28,6 +32,8 @@ public class AuthenticationController {
     private final AuthenticateUseCase authenticateUseCase;
     private final RegisterAccountUseCase registerAccountUseCase;
     private final SessionProperties sessionProperties;
+    private final VerifyEmailUseCase verifyEmailUseCase;
+    private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -77,5 +83,19 @@ public class AuthenticationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        verifyEmailUseCase.verifyEmail(request.token());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/resend-verification-email")
+    public ResponseEntity<Void> resendVerificationEmail(@Valid @RequestBody ResendVerificationEmailRequest request) {
+        resendVerificationEmailUseCase.resendVerificationEmail(request.email());
+
+        return ResponseEntity.noContent().build();
     }
 }
