@@ -18,6 +18,8 @@ import static org.mockito.Mockito.*;
 
 class JwtAuthenticationFilterTest {
 
+    private static final UUID USER_ID = UUID.randomUUID();
+
     private JwtTokenValidator jwtTokenValidator;
     private JwtAuthenticationFilter filter;
 
@@ -31,10 +33,9 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void shouldAuthenticateUserForValidBearerToken() throws ServletException, IOException {
-        UUID userId = UUID.randomUUID();
         String token = "valid-token";
 
-        when(jwtTokenValidator.validateAndGetUserId(token)).thenReturn(Optional.of(userId));
+        when(jwtTokenValidator.validateAndGetUserId(token)).thenReturn(Optional.of(USER_ID));
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer " + token);
@@ -48,7 +49,7 @@ class JwtAuthenticationFilterTest {
 
         assertNotNull(authentication);
         assertTrue(authentication.isAuthenticated());
-        assertEquals(userId, authentication.getPrincipal());
+        assertEquals(USER_ID, authentication.getPrincipal());
         assertNull(authentication.getCredentials());
 
         verify(jwtTokenValidator).validateAndGetUserId(token);

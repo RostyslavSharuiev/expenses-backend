@@ -22,6 +22,7 @@ class JwtTokenValidatorTest {
 
     private static final String JWT_ISSUER = "expenses-api";
     private static final Instant NOW = Instant.parse("2026-01-01T10:00:00Z");
+    private static final UUID USER_ID = UUID.randomUUID();
 
     private JwtTokenValidator validator;
     private SecretKey signingKey;
@@ -52,10 +53,8 @@ class JwtTokenValidatorTest {
 
     @Test
     void shouldReturnUserIdForValidToken() {
-        UUID userId = UUID.randomUUID();
-
         String token = generateToken(
-                userId,
+                USER_ID,
                 signingKey,
                 JWT_ISSUER,
                 NOW.plus(Duration.ofMinutes(15))
@@ -63,13 +62,13 @@ class JwtTokenValidatorTest {
 
         Optional<UUID> result = validator.validateAndGetUserId(token);
 
-        assertEquals(Optional.of(userId), result);
+        assertEquals(Optional.of(USER_ID), result);
     }
 
     @Test
     void shouldReturnEmptyForExpiredToken() {
         String token = generateToken(
-                UUID.randomUUID(),
+                USER_ID,
                 signingKey,
                 JWT_ISSUER,
                 NOW.minusSeconds(1)
@@ -89,7 +88,7 @@ class JwtTokenValidatorTest {
         SecretKey anotherKey = Keys.hmacShaKeyFor(anotherSecret);
 
         String token = generateToken(
-                UUID.randomUUID(),
+                USER_ID,
                 anotherKey,
                 JWT_ISSUER,
                 NOW.plus(Duration.ofMinutes(15))
@@ -101,7 +100,7 @@ class JwtTokenValidatorTest {
     @Test
     void shouldReturnEmptyForInvalidIssuer() {
         String token = generateToken(
-                UUID.randomUUID(),
+                USER_ID,
                 signingKey,
                 "another-issuer",
                 NOW.plus(Duration.ofMinutes(15))

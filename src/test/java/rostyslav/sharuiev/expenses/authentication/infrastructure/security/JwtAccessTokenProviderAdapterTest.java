@@ -24,6 +24,7 @@ class JwtAccessTokenProviderAdapterTest {
     private static final Duration ACCESS_TOKEN_TTL = Duration.ofMinutes(15);
 
     private static final Instant NOW = Instant.parse("2026-01-01T10:00:00Z");
+    private static final UUID USER_ID = UUID.randomUUID();
 
     private JwtAccessTokenProviderAdapter adapter;
     private SecretKey signingKey;
@@ -55,9 +56,7 @@ class JwtAccessTokenProviderAdapterTest {
 
     @Test
     void shouldGenerateValidAccessToken() {
-        UUID userId = UUID.randomUUID();
-
-        AccessTokenProviderPort.AccessToken result = adapter.generate(userId);
+        AccessTokenProviderPort.AccessToken result = adapter.generate(USER_ID);
 
         assertNotNull(result);
         assertNotNull(result.value());
@@ -67,9 +66,7 @@ class JwtAccessTokenProviderAdapterTest {
 
     @Test
     void shouldContainExpectedClaims() {
-        UUID userId = UUID.randomUUID();
-
-        AccessTokenProviderPort.AccessToken result = adapter.generate(userId);
+        AccessTokenProviderPort.AccessToken result = adapter.generate(USER_ID);
 
         Claims claims = Jwts
                 .parser()
@@ -79,7 +76,7 @@ class JwtAccessTokenProviderAdapterTest {
                 .parseSignedClaims(result.value())
                 .getPayload();
 
-        assertEquals(userId.toString(), claims.getSubject());
+        assertEquals(USER_ID.toString(), claims.getSubject());
         assertEquals(JWT_ISSUER, claims.getIssuer());
         assertEquals(Date.from(NOW), claims.getIssuedAt());
         assertEquals(Date.from(NOW.plus(ACCESS_TOKEN_TTL)), claims.getExpiration());

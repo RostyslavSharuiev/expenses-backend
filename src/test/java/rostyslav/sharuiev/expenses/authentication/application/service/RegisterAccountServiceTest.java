@@ -35,6 +35,7 @@ class RegisterAccountServiceTest {
 
     private static final Instant NOW = Instant.parse("2026-11-17T10:00:00Z");
     private static final Duration TOKEN_TTL = Duration.ofHours(24);
+    private static final UUID USER_ID = UUID.randomUUID();
 
     @Mock
     private UserAccountPort userAccountPort;
@@ -86,7 +87,6 @@ class RegisterAccountServiceTest {
 
     @Test
     void shouldRegisterAccountSuccessfully() {
-        UUID userId = UUID.randomUUID();
         String email = "user@example.com";
         String rawPassword = "Password123!";
         String passwordHash = "encoded-password";
@@ -100,7 +100,7 @@ class RegisterAccountServiceTest {
         );
 
         UserAccountPort.UserAccount user = new UserAccountPort.UserAccount(
-                userId,
+                USER_ID,
                 email,
                 null,
                 false
@@ -113,7 +113,7 @@ class RegisterAccountServiceTest {
 
         RegistrationResult result = registerAccountService.register(command);
 
-        assertEquals(userId, result.userId());
+        assertEquals(USER_ID, result.userId());
         assertEquals(email, result.email());
 
         ArgumentCaptor<UserAccountPort.CreateUserCommand> userCommandCaptor = ArgumentCaptor
@@ -131,7 +131,7 @@ class RegisterAccountServiceTest {
 
         UserCredentials credentials = credentialsCaptor.getValue();
 
-        assertEquals(userId, credentials.getUserId());
+        assertEquals(USER_ID, credentials.getUserId());
         assertEquals(passwordHash, credentials.getPasswordHash());
         assertEquals(NOW, credentials.getPasswordChangedAt());
 
@@ -142,7 +142,7 @@ class RegisterAccountServiceTest {
 
         EmailVerificationToken token = tokenCaptor.getValue();
 
-        assertEquals(userId, token.getUserId());
+        assertEquals(USER_ID, token.getUserId());
         assertEquals(tokenHash, token.getTokenHash());
         assertEquals(NOW, token.getCreatedAt());
         assertEquals(NOW.plus(TOKEN_TTL), token.getExpiresAt());
