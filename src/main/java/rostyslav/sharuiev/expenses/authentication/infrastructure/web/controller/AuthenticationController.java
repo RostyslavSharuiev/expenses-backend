@@ -6,10 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rostyslav.sharuiev.expenses.authentication.application.port.in.*;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.request.*;
 import rostyslav.sharuiev.expenses.authentication.infrastructure.web.response.RegisterAccountResponse;
@@ -31,6 +28,7 @@ public class AuthenticationController {
     private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final ForgotPasswordUseCase forgotPasswordUseCase;
+    private final RefreshAuthenticationUseCase refreshAuthenticationUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -130,5 +128,32 @@ public class AuthenticationController {
         forgotPasswordUseCase.forgotPassword(request.email());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(
+            @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String refreshToken
+    ) {
+        var result = refreshAuthenticationUseCase.refresh(refreshToken);
+
+        var cookie = ResponseCookie
+                .from(REFRESH_TOKEN_COOKIE, result.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/api/auth")
+                .maxAge(sessionProperties.refreshTokenTtl())
+                .build();
+
+        var response = new LoginResponse(
+                result.userId(),
+                result.accessToken(),
+                result.accessTokenExpiresIn()
+        );
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 }

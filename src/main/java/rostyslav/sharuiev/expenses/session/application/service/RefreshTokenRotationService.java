@@ -3,6 +3,7 @@ package rostyslav.sharuiev.expenses.session.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rostyslav.sharuiev.expenses.session.application.exception.InvalidRefreshTokenException;
 import rostyslav.sharuiev.expenses.session.application.exception.RefreshTokenReuseException;
 import rostyslav.sharuiev.expenses.session.application.port.in.RotateRefreshTokenUseCase;
 import rostyslav.sharuiev.expenses.session.application.port.out.RefreshTokenRepositoryPort;
@@ -28,7 +29,7 @@ public class RefreshTokenRotationService implements RotateRefreshTokenUseCase {
     @Transactional(noRollbackFor = RefreshTokenReuseException.class)
     public RotationResult rotateRefreshToken(String rawRefreshToken) {
         if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
-            throw new IllegalArgumentException("Refresh token must not be blank");
+            throw new InvalidRefreshTokenException();
         }
 
         Instant now = clock.instant();
@@ -37,7 +38,7 @@ public class RefreshTokenRotationService implements RotateRefreshTokenUseCase {
 
         RefreshToken currentToken = refreshTokenRepositoryPort
                 .findByTokenHashForUpdate(tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token"));
+                .orElseThrow(InvalidRefreshTokenException::new);
 
         if (currentToken.isReplaced()) {
             refreshTokenRepositoryPort.revokeAllBySessionId(
@@ -48,7 +49,7 @@ public class RefreshTokenRotationService implements RotateRefreshTokenUseCase {
         }
 
         if (!currentToken.isUsableAt(now)) {
-            throw new IllegalArgumentException("Invalid or expired refresh token");
+            throw new InvalidRefreshTokenException();
         }
 
         String newRawToken = secureTokenGeneratorPort.generateToken();

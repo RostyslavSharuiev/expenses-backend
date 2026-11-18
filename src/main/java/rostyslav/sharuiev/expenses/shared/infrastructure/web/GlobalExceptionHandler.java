@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import rostyslav.sharuiev.expenses.session.application.exception.InvalidRefreshTokenException;
 import rostyslav.sharuiev.expenses.session.application.exception.RefreshTokenReuseException;
 import rostyslav.sharuiev.expenses.shared.infrastructure.web.response.ApiErrorResponse;
 
@@ -18,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        var status = HttpStatus.BAD_REQUEST;
 
         var response = new ApiErrorResponse(
                 clock.instant(),
@@ -34,13 +35,29 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RefreshTokenReuseException.class)
     public ResponseEntity<ApiErrorResponse> handleRefreshTokenReuseException(RefreshTokenReuseException ex) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        var status = HttpStatus.UNAUTHORIZED;
 
         var response = new ApiErrorResponse(
                 clock.instant(),
                 status.value(),
                 status.getReasonPhrase(),
                 "Invalid or expired refresh token"
+        );
+
+        return ResponseEntity
+                .status(status)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidRefreshTokenException(InvalidRefreshTokenException ex) {
+        var status = HttpStatus.UNAUTHORIZED;
+
+        var response = new ApiErrorResponse(
+                clock.instant(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage()
         );
 
         return ResponseEntity
