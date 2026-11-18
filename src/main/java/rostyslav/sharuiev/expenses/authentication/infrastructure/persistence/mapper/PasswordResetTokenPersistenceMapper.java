@@ -25,6 +25,7 @@ public class PasswordResetTokenPersistenceMapper {
                 token.getUserId(),
                 token.getTokenHash(),
                 token.getExpiresAt(),
+                token.getCreatedAt(),
                 token.getUsedAt(),
                 token.getInvalidatedAt()
         );

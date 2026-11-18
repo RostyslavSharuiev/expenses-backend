@@ -19,7 +19,7 @@ public interface SpringDataPasswordResetTokenRepository extends JpaRepository<Pa
             FROM PasswordResetTokenJpaEntity token
             WHERE token.tokenHash = :tokenHash
             """)
-    Optional<PasswordResetTokenJpaEntity> findByTokenHashForUpdate(@Param("") String tokenHash);
+    Optional<PasswordResetTokenJpaEntity> findByTokenHashForUpdate(@Param("tokenHash") String tokenHash);
 
     @Modifying(
             flushAutomatically = true,

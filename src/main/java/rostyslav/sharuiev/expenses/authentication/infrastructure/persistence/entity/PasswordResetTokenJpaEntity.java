@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -36,7 +35,6 @@ public class PasswordResetTokenJpaEntity {
     @Column(nullable = false, updatable = false)
     private Instant expiresAt;
     
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -51,6 +49,7 @@ public class PasswordResetTokenJpaEntity {
             UUID userId,
             String tokenHash,
             Instant expiresAt,
+            Instant createdAt,
             Instant usedAt,
             Instant invalidatedAt
     ) {
@@ -58,6 +57,7 @@ public class PasswordResetTokenJpaEntity {
         this.userId = userId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
+        this.createdAt = createdAt;
         this.usedAt = usedAt;
         this.invalidatedAt = invalidatedAt;
     }

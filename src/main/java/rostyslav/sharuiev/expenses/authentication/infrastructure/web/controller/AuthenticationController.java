@@ -30,6 +30,7 @@ public class AuthenticationController {
     private final VerifyEmailUseCase verifyEmailUseCase;
     private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
+    private final ForgotPasswordUseCase forgotPasswordUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -122,5 +123,12 @@ public class AuthenticationController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        forgotPasswordUseCase.forgotPassword(request.email());
+
+        return ResponseEntity.noContent().build();
     }
 }

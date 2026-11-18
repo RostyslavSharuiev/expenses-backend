@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -44,7 +43,6 @@ public class RefreshTokenJpaEntity {
     @Column
     private UUID replacedByTokenId;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -53,13 +51,15 @@ public class RefreshTokenJpaEntity {
             UUID userId,
             UUID sessionId,
             String tokenHash,
-            Instant expiresAt
+            Instant expiresAt,
+            Instant createdAt
     ) {
         this.id = id;
         this.userId = userId;
         this.sessionId = sessionId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
+        this.createdAt = createdAt;
     }
 
     public void updateFrom(RefreshTokenJpaEntity source) {

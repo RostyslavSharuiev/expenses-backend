@@ -26,7 +26,8 @@ public class RefreshTokenPersistenceMapper {
                 refreshToken.getUserId(),
                 refreshToken.getSessionId(),
                 refreshToken.getTokenHash(),
-                refreshToken.getExpiresAt()
+                refreshToken.getExpiresAt(),
+                refreshToken.getCreatedAt()
         );
     }
 
