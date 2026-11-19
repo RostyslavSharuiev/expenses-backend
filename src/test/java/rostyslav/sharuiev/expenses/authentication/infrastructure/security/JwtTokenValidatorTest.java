@@ -118,7 +118,7 @@ class JwtTokenValidatorTest {
                 .expiration(Date.from(
                         NOW.plus(Duration.ofMinutes(15))
                 ))
-                .signWith(signingKey)
+                .signWith(signingKey, Jwts.SIG.HS256)
                 .compact();
 
         assertTrue(validator.validateAndGetUserId(token).isEmpty());
@@ -146,7 +146,7 @@ class JwtTokenValidatorTest {
                 .issuer(issuer)
                 .issuedAt(Date.from(NOW))
                 .expiration(Date.from(expiresAt))
-                .signWith(key)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 }

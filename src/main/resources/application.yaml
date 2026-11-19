@@ -2,10 +2,13 @@ spring:
   application:
     name: expenses
 
+  config:
+    import: "optional:file:./.env[.properties]"
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/expenses
-    username: postgres
-    password: root
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
@@ -29,7 +32,7 @@ app:
   authentication:
     email-verification-token-ttl: 24h
     password-reset-token-ttl: 30m
-    jwt-secret: cvbg92mRhsnezNiDnBp10YnDZSiqRNvJgLFvAKPH+10=
+    jwt-secret: ${JWT_SECRET}
     access-token-ttl: 15m
     jwt-issuer: expenses-api
 

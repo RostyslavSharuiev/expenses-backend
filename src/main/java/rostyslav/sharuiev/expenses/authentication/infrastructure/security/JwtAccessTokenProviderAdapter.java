@@ -45,7 +45,7 @@ public class JwtAccessTokenProviderAdapter implements AccessTokenProviderPort {
                 .issuer(authenticationProperties.jwtIssuer())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))
-                .signWith(signingKey)
+                .signWith(signingKey, Jwts.SIG.HS256)
                 .compact();
 
         return new AccessToken(token, authenticationProperties.accessTokenTtl().toSeconds());
