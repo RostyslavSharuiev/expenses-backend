@@ -43,6 +43,10 @@ public class JwtTokenValidator {
                     .parseSignedClaims(token)
                     .getPayload();
 
+            if (claims.getSubject() == null) {
+                return Optional.empty();
+            }
+
             return Optional.of(UUID.fromString(claims.getSubject()));
         }
         catch (JwtException | IllegalArgumentException ex) {
