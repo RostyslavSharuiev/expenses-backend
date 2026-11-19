@@ -8,8 +8,22 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
+    restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql
+
+  postgres-test-container:
+    image: postgres:latest
+    container_name: expenses-test-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_TEST_DB}
+      - POSTGRES_USER=${POSTGRES_TEST_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_TEST_PASSWORD}
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    volumes:
+      - postgres_test_data:/var/lib/postgresql
 
   mailpit:
     image: axllent/mailpit:latest
@@ -21,3 +35,4 @@ services:
 
 volumes:
   postgres_data:
+  postgres_test_data:

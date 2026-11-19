@@ -52,6 +52,8 @@ public class RefreshTokenJpaEntity {
             UUID sessionId,
             String tokenHash,
             Instant expiresAt,
+            Instant revokedAt,
+            UUID replacedByTokenId,
             Instant createdAt
     ) {
         this.id = id;
@@ -59,6 +61,8 @@ public class RefreshTokenJpaEntity {
         this.sessionId = sessionId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
+        this.revokedAt = revokedAt;
+        this.replacedByTokenId = replacedByTokenId;
         this.createdAt = createdAt;
     }
 

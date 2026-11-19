@@ -1,8 +1,8 @@
 package rostyslav.sharuiev.expenses.authentication.infrastructure.config;
 
+import io.jsonwebtoken.io.Decoders;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 @ConfigurationProperties(prefix = "app.authentication")
@@ -22,7 +22,9 @@ public record AuthenticationProperties(
             throw new IllegalArgumentException("jwtSecret must not be blank");
         }
 
-        if (jwtSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
+        byte[] decodedSecret = Decoders.BASE64.decode(jwtSecret);
+
+        if (decodedSecret.length < 32) {
             throw new IllegalArgumentException("jwtSecret must be at least 256 bits");
         }
 

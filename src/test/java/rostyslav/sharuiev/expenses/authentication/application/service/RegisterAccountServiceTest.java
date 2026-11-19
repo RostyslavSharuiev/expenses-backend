@@ -36,6 +36,7 @@ class RegisterAccountServiceTest {
     private static final Instant NOW = Instant.parse("2026-11-17T10:00:00Z");
     private static final Duration TOKEN_TTL = Duration.ofHours(24);
     private static final UUID USER_ID = UUID.randomUUID();
+    private static final String JWT_SECRET = "dGVzdC1qd3Qtc2VjcmV0LXRoYXQtaXMtYXQtMzItYnl0ZXM=";
 
     @Mock
     private UserAccountPort userAccountPort;
@@ -67,7 +68,7 @@ class RegisterAccountServiceTest {
         AuthenticationProperties properties = new AuthenticationProperties(
                 TOKEN_TTL,
                 Duration.ofMinutes(30),
-                "test-jwt-secret-that-is-at-least-32-bytes",
+                JWT_SECRET,
                 Duration.ofMinutes(15),
                 "expenses-api"
         );

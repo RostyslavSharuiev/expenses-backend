@@ -32,12 +32,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
+        if (authorizationHeader != null
+                && authorizationHeader.regionMatches(
+                    true,
+                    0,
+                    BEARER_PREFIX,
+                    0,
+                    BEARER_PREFIX.length()
+        )) {
             String token = authorizationHeader.substring(BEARER_PREFIX.length());
 
-            jwtTokenValidator
-                    .validateAndGetUserId(token)
-                    .ifPresent(this::authenticate);
+            if (!token.isBlank()) {
+                jwtTokenValidator
+                        .validateAndGetUserId(token)
+                        .ifPresent(this::authenticate);
+            }
         }
 
         filterChain.doFilter(request, response);
